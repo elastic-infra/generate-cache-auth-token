@@ -81,6 +81,32 @@ The tool uses the AWS SDK's default credential provider chain, which looks for c
 3. IAM roles for EC2 instances
 4. IAM roles for tasks (ECS/Fargate)
 
+### MFA Support
+
+The tool supports AWS profiles that require Multi-Factor Authentication (MFA). When using a profile with MFA enabled (configured with `mfa_serial` in `~/.aws/config`), the tool will:
+
+1. Automatically detect that MFA is required
+2. Prompt you to enter your MFA token code
+3. Use the token to assume the role and generate temporary credentials
+
+Example AWS config with MFA:
+
+```ini
+[profile my-mfa-profile]
+region = us-east-1
+role_arn = arn:aws:iam::123456789012:role/MyRole
+source_profile = default
+mfa_serial = arn:aws:iam::123456789012:mfa/my-user
+```
+
+Usage with MFA:
+
+```bash
+export AWS_PROFILE=my-mfa-profile
+./elasticache-token -user-id iam-test-user-01 -replication-group-id iam-test-rg-01
+Enter MFA token: 123456
+```
+
 ## License
 
 This project is released under the MIT License.
